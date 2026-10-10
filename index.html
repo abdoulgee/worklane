@@ -1,0 +1,323 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="theme-color" content="#080808">
+  <meta name="description" content="WorkLane — explore opportunity information by country.">
+  <title>WorkLane — Explore Opportunities</title>
+  <style>
+    :root{
+      --bg:#080808;--card:#151515;--card2:#101010;--border:#292929;
+      --text:#fff;--muted:#a5a5a5;--green:#35e875;--green2:#20c963;
+      --max:1080px;--radius:22px;
+    }
+    *{box-sizing:border-box}
+    html{scroll-behavior:smooth}
+    body{margin:0;background:var(--bg);color:var(--text);font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;line-height:1.5}
+    a{color:inherit;text-decoration:none}
+    button{font:inherit}
+    .container{width:min(calc(100% - 32px),var(--max));margin:auto}
+    .site-header{position:sticky;top:0;z-index:20;background:rgba(8,8,8,.88);backdrop-filter:blur(14px);border-bottom:1px solid rgba(255,255,255,.06)}
+    .nav{height:68px;display:flex;align-items:center;justify-content:space-between}
+    .brand{font-size:22px;font-weight:850;letter-spacing:-.7px}
+    .brand span{color:var(--green)}
+    .navlinks{display:none;gap:28px;color:#cfcfcf;font-size:14px}
+    .menu{width:42px;height:42px;border:1px solid var(--border);background:#111;border-radius:12px;color:#fff;display:grid;place-items:center}
+    .menu-lines,.menu-lines:before,.menu-lines:after{width:18px;height:2px;background:#fff;display:block;content:"";position:relative}
+    .menu-lines:before{position:absolute;top:-6px}.menu-lines:after{position:absolute;top:6px}
+    .hero{padding:58px 0 30px;text-align:left}
+    .eyebrow{display:inline-flex;align-items:center;gap:8px;color:var(--green);font-size:12px;font-weight:800;letter-spacing:1.2px}
+    .dot{width:7px;height:7px;background:var(--green);border-radius:50%;box-shadow:0 0 14px rgba(53,232,117,.8)}
+    h1{font-size:clamp(42px,10vw,78px);line-height:.98;letter-spacing:-3px;margin:14px 0 18px;max-width:780px}
+    .lead{color:var(--muted);font-size:17px;max-width:590px;margin:0}
+    .checks{display:flex;flex-wrap:wrap;gap:12px 18px;margin:24px 0 0;padding:0;list-style:none;color:#d6d6d6;font-size:12px;font-weight:750}
+    .checks li{display:flex;gap:7px;align-items:center}.checks b{color:var(--green);font-size:15px}
+    .section{padding:42px 0}
+    .section-kicker{color:var(--green);font-size:11px;font-weight:850;letter-spacing:1.4px;margin-bottom:10px}
+    h2{font-size:clamp(30px,7vw,48px);line-height:1.02;letter-spacing:-1.8px;margin:0 0 12px}
+    .section-copy{color:var(--muted);margin:0 0 24px}
+    .countries{display:grid;grid-template-columns:1fr;gap:10px}
+    .country{position:relative;padding:19px;border:1px solid var(--border);background:var(--card2);border-radius:18px;color:#ddd;text-align:left;cursor:pointer;transition:.22s ease}
+    .country:hover{transform:translateY(-2px);border-color:#3b3b3b}
+    .country.active{border-color:var(--green);box-shadow:0 0 0 1px rgba(53,232,117,.18),0 0 30px rgba(53,232,117,.08)}
+    .country .flag{font-size:25px;margin-right:10px}.country strong{font-size:16px}
+    .country small{display:block;color:#777;margin-top:4px;margin-left:38px}
+    .country .active-mark{position:absolute;right:16px;top:50%;transform:translateY(-50%);color:var(--green);font-size:12px;font-weight:800;opacity:0}
+    .country.active .active-mark{opacity:1}
+    .offers-head{display:flex;justify-content:space-between;align-items:end;gap:16px;margin-bottom:18px}
+    .selected-label{color:#aaa;font-size:13px}
+    .offers{display:grid;grid-template-columns:1fr;gap:14px}
+    .offer{background:linear-gradient(145deg,#171717,#111);border:1px solid #292929;border-radius:var(--radius);padding:19px;position:relative;overflow:hidden;animation:rise .35s ease both}
+    .offer.featured{border-color:rgba(53,232,117,.55)}
+    .offer:after{content:"";position:absolute;inset:auto -30% -65% 35%;height:150px;background:radial-gradient(circle,rgba(53,232,117,.10),transparent 68%);pointer-events:none}
+    @keyframes rise{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+    .toprow{display:flex;align-items:center;justify-content:space-between;gap:10px}
+    .countryline{font-size:13px;color:#ddd;font-weight:700}
+    .live{display:flex;align-items:center;gap:6px;color:var(--green);font-size:11px;font-weight:850}
+    .live i,.status i{width:7px;height:7px;background:var(--green);border-radius:50%;display:inline-block;box-shadow:0 0 10px rgba(53,232,117,.7)}
+    .badge{display:inline-block;margin-top:13px;padding:5px 8px;border:1px solid rgba(53,232,117,.35);border-radius:7px;color:var(--green);font-size:9px;font-weight:900;letter-spacing:.8px}
+    .visual{height:100px;margin:14px 0;display:grid;place-items:center;background:#0d0d0d;border:1px solid #222;border-radius:16px;overflow:hidden;padding:14px}.visual img{width:100%;height:100%;object-fit:contain;display:block}
+    .visual .mark{font-size:34px;font-weight:900;letter-spacing:-2px}
+    .visual .mark.netflix{font-size:40px;color:#e50914}
+    .visual .mark.tesla{font-size:28px;color:#eee;letter-spacing:1px}
+    .visual .mark.tiktok{font-size:27px;color:#fff;text-shadow:-2px 0 #25f4ee,2px 0 #fe2c55}
+    .offer h3{font-size:22px;letter-spacing:-.8px;margin:4px 0}
+    .meta{color:#888;font-size:12px;font-weight:700}
+    .info{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:18px 0}
+    .info div{background:#101010;border:1px solid #222;border-radius:12px;padding:10px}
+    .info span{display:block;color:#6f6f6f;font-size:9px;font-weight:800;letter-spacing:.7px;margin-bottom:3px}
+    .info strong{font-size:12px}.status strong{color:var(--green)}
+    .apply{position:relative;z-index:2;width:100%;padding:15px;border:0;border-radius:13px;background:#fff;color:#080808;font-weight:900;letter-spacing:.1px;cursor:pointer;transition:.18s ease}
+    .apply:hover{transform:translateY(-1px);background:#f0f0f0}
+    .details{display:none;margin-top:26px;background:#111;border:1px solid var(--border);border-radius:var(--radius);padding:22px}
+    .details.show{display:block;animation:rise .25s ease both}
+    .details-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:20px 0}
+    .detail{background:#0c0c0c;border:1px solid #222;border-radius:13px;padding:12px}.detail span{display:block;color:#777;font-size:10px;font-weight:800}.detail strong{font-size:13px}
+    .notice{color:#999;font-size:12px;margin:0 0 15px}
+    .how-grid,.why-grid{display:grid;grid-template-columns:1fr;gap:12px}
+    .step,.why{padding:20px;background:var(--card);border:1px solid var(--border);border-radius:18px}
+    .num{color:var(--green);font-size:11px;font-weight:900;letter-spacing:1px}.step h3,.why h3{margin:7px 0 5px;font-size:17px}.step p,.why p{margin:0;color:#999;font-size:13px}
+    .transparency{border:1px solid #303030;background:#0f0f0f;border-radius:20px;padding:22px}
+    .transparency p{color:#a5a5a5;font-size:13px;margin:8px 0}
+    .faq{border-top:1px solid var(--border)}details{border-bottom:1px solid var(--border);padding:16px 0}summary{cursor:pointer;font-weight:750;list-style:none;display:flex;justify-content:space-between}summary::-webkit-details-marker{display:none}summary:after{content:"+";color:var(--green)}details[open] summary:after{content:"−"}details p{color:#999;font-size:13px;margin:10px 0 0}
+    footer{border-top:1px solid #202020;padding:34px 0 50px;color:#777;font-size:12px}.footer-brand{font-size:19px;font-weight:850;color:#fff;margin-bottom:15px}.footer-links{display:flex;flex-wrap:wrap;gap:15px;margin-bottom:18px}.footer-links a:hover{color:#fff}
+    .disclaimer{max-width:720px;line-height:1.65}
+    @media(min-width:650px){
+      .container{width:min(calc(100% - 48px),var(--max))}
+      .hero{padding-top:82px}.countries{grid-template-columns:repeat(3,1fr)}
+      .offers{grid-template-columns:repeat(2,1fr)}
+      .how-grid,.why-grid{grid-template-columns:repeat(3,1fr)}
+      .why-grid{grid-template-columns:repeat(4,1fr)}
+      .navlinks{display:flex}.menu{display:none}
+      .details-grid{grid-template-columns:repeat(4,1fr)}
+    }
+    @media(min-width:950px){.offers{grid-template-columns:repeat(3,1fr)}.hero{padding-bottom:48px}}
+  </style>
+</head>
+<body>
+<header class="site-header">
+  <div class="container nav">
+    <a class="brand" href="#">Work<span>Lane</span></a>
+    <nav class="navlinks" aria-label="Primary">
+      <a href="#opportunities">Opportunities</a><a href="#how">How It Works</a><a href="#faq">FAQ</a>
+    </nav>
+    <button class="menu" aria-label="Menu"><span class="menu-lines"></span></button>
+  </div>
+</header>
+
+<main>
+  <section class="hero container">
+    <div class="eyebrow"><span class="dot"></span> STEP 01 — SELECT COUNTRY</div>
+    <h1>Where do you want to work?</h1>
+    <p class="lead">Choose your country to view available opportunities.</p>
+    <ul class="checks">
+      <li><b>✓</b> REMOTE OPPORTUNITIES</li>
+      <li><b>✓</b> FLEXIBLE HOURS</li>
+      <li><b>✓</b> SIMPLE APPLICATION</li>
+    </ul>
+  </section>
+
+  <section class="section container" id="opportunities">
+    <div class="section-kicker">COUNTRY</div>
+    <h2>Choose your market</h2>
+    <p class="section-copy">Available opportunities update automatically when you change country.</p>
+    <div class="countries" role="tablist" aria-label="Country selector">
+      <button class="country active" data-country="US" role="tab" aria-selected="true">
+        <span class="flag">🇺🇸</span><strong>United States</strong><small>3 opportunities</small><span class="active-mark">ACTIVE</span>
+      </button>
+      <button class="country" data-country="UK" role="tab" aria-selected="false">
+        <span class="flag">🇬🇧</span><strong>United Kingdom</strong><small>1 opportunity</small><span class="active-mark">ACTIVE</span>
+      </button>
+      <button class="country" data-country="CA" role="tab" aria-selected="false">
+        <span class="flag">🇨🇦</span><strong>Canada</strong><small>1 opportunity</small><span class="active-mark">ACTIVE</span>
+      </button>
+    </div>
+  </section>
+
+  <section class="section container">
+    <div class="offers-head">
+      <div>
+        <div class="section-kicker">AVAILABLE OPPORTUNITIES</div>
+        <h2 id="countryHeading">United States</h2>
+      </div>
+      <div class="selected-label" id="offerCount">3 opportunities</div>
+    </div>
+    <div class="offers" id="offers"></div>
+    <div class="details" id="details" aria-live="polite"></div>
+  </section>
+
+  <section class="section container" id="how">
+    <div class="section-kicker">HOW IT WORKS</div><h2>Simple from start to finish.</h2>
+    <p class="section-copy">Review opportunity information before continuing to the relevant destination.</p>
+    <div class="how-grid">
+      <article class="step"><div class="num">STEP 01</div><h3>SELECT YOUR COUNTRY</h3><p>Choose your country to see available opportunities.</p></article>
+      <article class="step"><div class="num">STEP 02</div><h3>VIEW AN OPPORTUNITY</h3><p>Review the opportunity information and requirements.</p></article>
+      <article class="step"><div class="num">STEP 03</div><h3>APPLY</h3><p>Continue to the relevant application destination.</p></article>
+    </div>
+  </section>
+
+  <section class="section container">
+    <div class="section-kicker">WHY WorkLane</div><h2>Explore Remote Opportunities</h2>
+    <div class="why-grid">
+      <article class="why"><h3>REMOTE OPTIONS</h3><p>Explore opportunities that may be completed remotely.</p></article>
+      <article class="why"><h3>FLEXIBLE HOURS</h3><p>Some opportunities may offer flexible schedules.</p></article>
+      <article class="why"><h3>COUNTRY BASED</h3><p>See opportunities based on your selected country.</p></article>
+      <article class="why"><h3>SIMPLE PROCESS</h3><p>Choose an opportunity and continue to the relevant application.</p></article>
+    </div>
+  </section>
+
+  <section class="section container">
+    <div class="transparency">
+      <div class="section-kicker">TRANSPARENCY</div><h2>Before You Apply</h2>
+      <p>WorkLane is an independent opportunity-information platform. Brand names, logos and trademarks belong to their respective owners.</p>
+      <p>Opportunity availability, eligibility and requirements may vary by location and offer. Review the opportunity details before continuing.</p>
+    </div>
+  </section>
+
+  <section class="section container" id="faq">
+    <div class="section-kicker">FAQ</div><h2>Questions, answered.</h2>
+    <div class="faq">
+      <details><summary>Which countries are supported?</summary><p>WorkLane currently displays opportunities for the United States, United Kingdom and Canada.</p></details>
+      <details><summary>Which opportunities are available in the United States?</summary><p>United States visitors can currently view Netflix, Tesla and TikTok opportunities.</p></details>
+      <details><summary>Which opportunity is available in the United Kingdom?</summary><p>The Tesla opportunity is currently available for the United Kingdom.</p></details>
+      <details><summary>Which opportunity is available in Canada?</summary><p>The Tesla opportunity is currently available for Canada.</p></details>
+      <details><summary>Do I need experience?</summary><p>Requirements vary by opportunity. Review the specific opportunity information before continuing.</p></details>
+      <details><summary>Is WorkLane the employer?</summary><p>No. WorkLane is an independent opportunity-information platform. The actual employer or opportunity provider should be verified before applying.</p></details>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="container">
+    <div class="footer-brand">WorkLane</div>
+    <div class="footer-links">
+      <a href="#opportunities">Opportunities</a><a href="#how">How It Works</a><a href="#faq">FAQ</a>
+      <a href="#">Privacy Policy</a><a href="#">Terms</a><a href="mailto:contact@worklane.example">Contact</a>
+    </div>
+    <div class="disclaimer">WorkLane is an independent opportunity-information platform. Company names, logos and trademarks belong to their respective owners.</div>
+  </div>
+</footer>
+
+<script>
+/* WorkLane brand page. Supplied brand logo assets are used only as opportunity visuals. */
+/* Central tracking configuration — do not expose raw URLs in the UI. */
+const offers = {
+  netflix: {
+    name: "MyJobsCorner – Netflix",
+    title: "Netflix Reviewer",
+    countries: ["US"],
+    category: "Streaming",
+    trackingUrl: "https://trksy.org/aff_c?offer_id=973&aff_id=113012",
+    visual: "netflix",
+    countryName: "United States", flag: "🇺🇸"
+  },
+  tesla: {
+    name: "MyJobsCorner – Tesla",
+    title: "Tesla Reviewer",
+    countries: ["US", "UK", "CA"],
+    category: "Automotive",
+    trackingUrl: "https://trksy.org/aff_c?offer_id=1363&aff_id=113012",
+    visual: "tesla",
+  },
+  tiktok: {
+    name: "MyJobsCorner – TikTok",
+    title: "TikTok Reviewer",
+    countries: ["US"],
+    category: "Social Media",
+    trackingUrl: "https://trksy.org/aff_c?offer_id=4087&aff_id=113012",
+    visual: "tiktok",
+  }
+};
+
+const countries = {
+  US:{name:"United States",flag:"🇺🇸"},
+  UK:{name:"United Kingdom",flag:"🇬🇧"},
+  CA:{name:"Canada",flag:"🇨🇦"}
+};
+
+const offersEl = document.getElementById("offers");
+const detailsEl = document.getElementById("details");
+const headingEl = document.getElementById("countryHeading");
+const countEl = document.getElementById("offerCount");
+
+function visualMarkup(type){
+  const logos = {
+    netflix: {src:"netflix.png", alt:"Netflix logo"},
+    tesla: {src:"tesla.png", alt:"Tesla logo"},
+    tiktok: {src:"tiktok.jpg", alt:"TikTok logo"}
+  };
+  const logo = logos[type];
+  return `<img src="${logo.src}" alt="${logo.alt}" loading="lazy">`;
+}
+function offerCountry(o, selected){
+  if(o.visual === "tesla") return countries[selected];
+  return {name:"United States",flag:"🇺🇸"};
+}
+function render(countryCode){
+  const list = Object.values(offers).filter(o=>o.countries.includes(countryCode));
+  headingEl.textContent = countries[countryCode].name;
+  countEl.textContent = `${list.length} ${list.length===1?"opportunity":"opportunities"}`;
+  offersEl.innerHTML = list.map((o,i)=>{
+    const c=offerCountry(o,countryCode);
+    return `<article class="offer featured" style="animation-delay:${i*60}ms">
+      <div class="toprow"><div class="countryline">${c.flag} ${c.name}</div><div class="live"><i></i> LIVE</div></div>
+      <span class="badge">FEATURED</span>
+      <div class="visual">${visualMarkup(o.visual)}</div>
+      <h3>${o.name}</h3>
+      <div class="meta">${o.category} • REMOTE</div>
+      <div class="info">
+        <div><span>ROLE</span><strong>Remote</strong></div>
+        <div><span>HOURS</span><strong>Flexible</strong></div>
+        <div class="status"><span>STATUS</span><strong><i></i> Hiring</strong></div>
+      </div>
+      <button class="apply" data-offer="${Object.keys(offers).find(k=>offers[k]===o)}">APPLY NOW →</button>
+    </article>`;
+  }).join("");
+  detailsEl.classList.remove("show");
+  detailsEl.innerHTML="";
+}
+
+function showDetails(key,countryCode){
+  const o=offers[key], c=offerCountry(o,countryCode);
+  detailsEl.innerHTML = `
+    <div class="section-kicker">STEP 02 — OPPORTUNITY DETAILS</div>
+    <div class="visual">${visualMarkup(o.visual)}</div>
+    <h2>${o.title}</h2>
+    <div class="details-grid">
+      <div class="detail"><span>COUNTRY</span><strong>${c.flag} ${c.name}</strong></div>
+      <div class="detail"><span>ROLE</span><strong>Remote</strong></div>
+      <div class="detail"><span>CATEGORY</span><strong>${o.category}</strong></div>
+      <div class="detail"><span>WORK TYPE</span><strong>Remote</strong></div>
+      <div class="detail"><span>HOURS</span><strong>Flexible</strong></div>
+      <div class="detail"><span>STATUS</span><strong style="color:var(--green)">● Hiring</strong></div>
+    </div>
+    <p class="notice">Review the opportunity details before continuing.</p>
+    <button class="apply" data-continue="${key}">CONTINUE TO OPPORTUNITY →</button>`;
+  detailsEl.classList.add("show");
+  detailsEl.scrollIntoView({behavior:"smooth",block:"center"});
+}
+
+let selectedCountry="US";
+document.querySelectorAll(".country").forEach(btn=>{
+  btn.addEventListener("click",()=>{
+    selectedCountry=btn.dataset.country;
+    document.querySelectorAll(".country").forEach(b=>{
+      const active=b===btn;b.classList.toggle("active",active);b.setAttribute("aria-selected",active);
+    });
+    render(selectedCountry);
+  });
+});
+
+offersEl.addEventListener("click",e=>{
+  const btn=e.target.closest("[data-offer]");
+  if(btn) showDetails(btn.dataset.offer,selectedCountry);
+});
+detailsEl.addEventListener("click",e=>{
+  const btn=e.target.closest("[data-continue]");
+  if(btn) window.location.href=offers[btn.dataset.continue].trackingUrl;
+});
+render(selectedCountry);
+</script>
+</body>
+</html>
